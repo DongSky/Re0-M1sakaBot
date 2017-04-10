@@ -68,5 +68,26 @@ namespace M1sakaBot.Module {
             }
             return links;
         }
+        public String TitleGet(String ArxivID) {
+            String search_link = "https://arxiv.org/abs/" +ArxivID;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(search_link);
+            request.Referer = "http://arxiv.org/";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
+            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            HttpWebResponse responce = (HttpWebResponse)request.GetResponse();
+            //responce.Cookies;
+            Stream res_stream = responce.GetResponseStream();
+            StreamReader stream_reader = new StreamReader(res_stream, Encoding.GetEncoding("UTF-8"));
+            string content = stream_reader.ReadToEnd();
+            Regex title_reg = new Regex(@"<title>.+?</title>");
+            MatchCollection title_ = title_reg.Matches(content);
+            String Title="";
+            foreach(Match t in title_) {
+                Title = t.Value;
+            }
+            Regex.Replace(Title, @"<title>", "");
+            Regex.Replace(Title, @"</title>", "");
+            return Title;
+        }
     }
 }
